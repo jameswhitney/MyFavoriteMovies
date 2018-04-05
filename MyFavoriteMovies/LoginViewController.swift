@@ -99,6 +99,15 @@ class LoginViewController: UIViewController {
         /* 4. Make the request */
         let task = appDelegate.sharedSession.dataTask(with: request) { (data, response, error) in
             
+            // Check if an error occurs, print error and reset UI
+            func displayError(_ error: String) {
+                print(error)
+                performUIUpdatesOnMain {
+                    self.setUIEnabled(true)
+                    self.debugTextLabel.text = "Login Failed: (Request Token)"
+                }
+            }
+            
             /* 5. Parse the data */
             /* 6. Use the data! */
         }
