@@ -107,6 +107,23 @@ class LoginViewController: UIViewController {
                     self.debugTextLabel.text = "Login Failed: (Request Token)"
                 }
             }
+            // Check if an error was return. If so print the error
+            guard (error == nil) else {
+                displayError("Error returned with request: \(error!)")
+                return
+            }
+            
+            // Check for succesfull response in the 2xx range otherwise print the error
+            guard  let statusCode = (response as? HTTPURLResponse)?.statusCode, statusCode >= 200 && statusCode <= 299 else {
+                displayError("Request returned value outside of 2xx")
+                return
+            }
+            
+            // Check if any data was return. If not print error
+            guard let data = data else {
+                displayError("No data was returned")
+                return
+            }
             
             /* 5. Parse the data */
             /* 6. Use the data! */
