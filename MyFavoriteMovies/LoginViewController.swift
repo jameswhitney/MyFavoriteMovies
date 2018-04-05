@@ -126,7 +126,30 @@ class LoginViewController: UIViewController {
             }
             
             /* 5. Parse the data */
+            let parsedResult: [String:AnyObject]!
+            do {
+                parsedResult = try JSONSerialization.jsonObject(with: data, options: .allowFragments) as! [String:AnyObject]
+            } catch {
+                displayError("Could not parse JSON: '\(data)'")
+                return
+            }
+            
+            // Did TheMovieDB return any errors. If so print them
+            if let _ = parsedResult[Constants.TMDBResponseKeys.StatusCode] as? Int {
+                displayError("TheMovieDB returned an error. See '\(Constants.TMDBResponseKeys.StatusCode)' and '\(Constants.TMDBResponseKeys.StatusMessage)'")
+                return
+            }
+            
+            // Check if request_token key is in parsedResult. If not print error
+            guard let requestToken = parsedResult[Constants.TMDBResponseKeys.RequestToken] as? String else {
+                displayError("Key '\(Constants.TMDBResponseKeys.RequestToken)' not found in '\(parsedResult)'")
+                return
+            }
+            
             /* 6. Use the data! */
+            // If the parsedResults pass all checks use the data
+            self.appDelegate.requestToken = requestToken
+            self.loginWithToken(self.appDelegate.requestToken!)
         }
 
         /* 7. Start the request */
