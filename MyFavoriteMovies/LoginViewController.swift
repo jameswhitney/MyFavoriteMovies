@@ -146,10 +146,10 @@ class LoginViewController: UIViewController {
                 return
             }
             
+            print(requestToken)
             /* 6. Use the data! */
-            // If the parsedResults pass all checks use the data
-            self.appDelegate.requestToken = requestToken
-            self.loginWithToken(self.appDelegate.requestToken!)
+
+            
         }
 
         /* 7. Start the request */
