@@ -136,7 +136,7 @@ class LoginViewController: UIViewController {
             
             // Did TheMovieDB return any errors. If so print them
             if let _ = parsedResult[Constants.TMDBResponseKeys.StatusCode] as? Int {
-                displayError("TheMovieDB returned an error. See '\(Constants.TMDBResponseKeys.StatusCode)' and '\(Constants.TMDBResponseKeys.StatusMessage)'")
+                displayError("TheMovieDB returned an error. See '\(Constants.TMDBResponseKeys.StatusCode)' and '\(Constants.TMDBResponseKeys.StatusMessage) in \(parsedResult)'")
                 return
             }
             
@@ -146,9 +146,11 @@ class LoginViewController: UIViewController {
                 return
             }
             
-            print(requestToken)
+            
             /* 6. Use the data! */
-
+            self.appDelegate.requestToken = requestToken
+            self.loginWithToken(self.appDelegate.requestToken!)
+            print(requestToken)
             
         }
 
