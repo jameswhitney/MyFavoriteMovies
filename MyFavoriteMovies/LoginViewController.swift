@@ -107,7 +107,7 @@ class LoginViewController: UIViewController {
                 print(error)
                 performUIUpdatesOnMain {
                     self.setUIEnabled(true)
-                    self.debugTextLabel.text = "Login Failed: (Request Token)"
+                    self.debugTextLabel.text = "Login Failed: (getRequestToken)"
                 }
             }
             // Check if an error was return. If so print the error
@@ -124,7 +124,7 @@ class LoginViewController: UIViewController {
             
             // Check if any data was return. If not print error
             guard let data = data else {
-                displayError("No data was returned in getRequestToken")
+                displayError("No data was returned")
                 return
             }
             
@@ -178,12 +178,12 @@ class LoginViewController: UIViewController {
         /* 4. Make the request */
         let task = appDelegate.sharedSession.dataTask(with: request) { (data, response, error) in
             
-            // if an error occurs, print it and re-enable the UI
+            // if an error occurs reset UI
             func displayError(_ error: String, debugLabelText: String? = nil) {
                 print(error)
                 performUIUpdatesOnMain {
                     self.setUIEnabled(true)
-                    self.debugTextLabel.text = "Login Failed (Login Step)."
+                    self.debugTextLabel.text = "Login Failed (loginWithToken)."
                 }
             }
             
@@ -201,7 +201,7 @@ class LoginViewController: UIViewController {
             
             // Check if data was returned if not print error
             guard let data = data else {
-                displayError("No data return from request in loginWithToken")
+                displayError("No data return from request")
                 return
             }
             
@@ -227,7 +227,7 @@ class LoginViewController: UIViewController {
                 return
             }
             
-            // Add data to AppDelegate and use it
+            // Save requestToken to AppDelegate and use it to call getSessionID function
             print("Token: \(requestToken)")
             self.getSessionID(self.appDelegate.requestToken!)
         }
@@ -241,11 +241,75 @@ class LoginViewController: UIViewController {
         /* TASK: Get a session ID, then store it (appDelegate.sessionID) and get the user's id */
         
         /* 1. Set the parameters */
+        let methodParameters = [
+            Constants.TMDBParameterKeys.ApiKey: Credentials.apiKey,
+            Constants.TMDBParameterKeys.RequestToken: requestToken
+        ]
         /* 2/3. Build the URL, Configure the request */
+        let request = URLRequest(url: appDelegate.tmdbURLFromParameters(methodParameters as [String:AnyObject], withPathExtension: "/authentication/session/new"))
+        
         /* 4. Make the request */
-        /* 5. Parse the data */
-        /* 6. Use the data! */
+        let task = appDelegate.sharedSession.dataTask(with: request) { (data, response, error) in
+            
+            // If error occurs reset UI
+            func displayError(_ error: String, debugLabelText: String? = nil) {
+                print(error)
+                performUIUpdatesOnMain {
+                    self.setUIEnabled(true)
+                    self.debugTextLabel.text = "Login Failed: (getSessionID)"
+                }
+                
+            }
+            
+            // Check if there was an error from request
+            guard (error == nil) else {
+                displayError("Error with request: \(error!)")
+                return
+            }
+            
+            // Check if 2xx response
+            guard let statusCode = (response as? HTTPURLResponse)?.statusCode, statusCode >= 200 && statusCode <= 299 else {
+                displayError("Request returned a code other than 2xx")
+                return
+            }
+            
+            // Check if any data was returned
+            guard let data = data else {
+                displayError("No data was returned")
+                return
+            }
+            
+            /* 5. Parse the data */
+            // Try to parse data, catch any error and print error
+            let parsedResult: [String:AnyObject]!
+            
+            do {
+                parsedResult = try JSONSerialization.jsonObject(with: data, options: .allowFragments) as! [String:AnyObject]
+            } catch {
+                displayError("Could not parse data as JSON: '\(data)'")
+                return
+            }
+            
+            // Check if TMDB returned an error. Print error if one is found
+            if let _ = parsedResult[Constants.TMDBResponseKeys.StatusCode] as? Int {
+                displayError("TheMovieDB returned an error. See the '\(Constants.TMDBResponseKeys.StatusCode)' and '\(Constants.TMDBResponseKeys.StatusMessage)' in \(parsedResult)")
+                return
+            }
+            
+            guard let sessionID = parsedResult[Constants.TMDBParameterKeys.SessionID] as? String else {
+                displayError("Key '\(Constants.TMDBParameterKeys.SessionID)' not found in \(parsedResult)")
+                return
+            }
+            
+            /* 6. Use the data! */
+            // Save sessionID in appDelegate then pass sessionID from appDelegate to getUserID
+            self.appDelegate.sessionID = sessionID
+            self.getUserID(self.appDelegate.sessionID!)
+            
+        }
+        
         /* 7. Start the request */
+        task.resume()
     }
     
     private func getUserID(_ sessionID: String) {
