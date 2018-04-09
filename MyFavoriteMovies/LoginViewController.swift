@@ -112,11 +112,11 @@ class LoginViewController: UIViewController {
             }
             // Check if an error was return. If so print the error
             guard (error == nil) else {
-                displayError("Error returned with request: \(error!)")
+                displayError("Error found in request: \(error!)")
                 return
             }
             
-            // Check for succesfull response in the 2xx range otherwise print the error
+            // Check if statusCode is a successful 2xx code if not print error
             guard  let statusCode = (response as? HTTPURLResponse)?.statusCode, statusCode >= 200 && statusCode <= 299 else {
                 displayError("Request returned value outside of 2xx.")
                 return
@@ -187,12 +187,12 @@ class LoginViewController: UIViewController {
                 }
             }
             
-            /* GUARD: Was there an error? */
+            // Check if an error was return. If so print the error
             guard (error == nil) else {
-                displayError("There was an error with your request: \(error!)")
+                displayError("Error found in request: \(error!)")
                 return
             }
-            // Check for succesful response in the 2xx range
+            // Check if statusCode is a successful 2xx code if not print error
             guard let statusCode = (response as? HTTPURLResponse)?.statusCode, statusCode >= 200 && statusCode <= 299 else {
                 displayError("Response status code is not in the 2xx range.")
                 return
@@ -201,7 +201,7 @@ class LoginViewController: UIViewController {
             
             // Check if data was returned if not print error
             guard let data = data else {
-                displayError("No data return from request")
+                displayError("No data was returned")
                 return
             }
             
@@ -228,7 +228,6 @@ class LoginViewController: UIViewController {
             }
             
             // Save requestToken to AppDelegate and use it to call getSessionID function
-            print("Token: \(requestToken)")
             self.getSessionID(self.appDelegate.requestToken!)
         }
         
@@ -261,13 +260,13 @@ class LoginViewController: UIViewController {
                 
             }
             
-            // Check if there was an error from request
+            // Check if an error was return. If so print the error
             guard (error == nil) else {
-                displayError("Error with request: \(error!)")
+                displayError("Error found in request: \(error!)")
                 return
             }
             
-            // Check if 2xx response
+            // Check if statusCode is a successful 2xx code if not print error
             guard let statusCode = (response as? HTTPURLResponse)?.statusCode, statusCode >= 200 && statusCode <= 299 else {
                 displayError("Request returned a code other than 2xx")
                 return
@@ -296,8 +295,8 @@ class LoginViewController: UIViewController {
                 return
             }
             
-            guard let sessionID = parsedResult[Constants.TMDBParameterKeys.SessionID] as? String else {
-                displayError("Key '\(Constants.TMDBParameterKeys.SessionID)' not found in \(parsedResult)")
+            guard let sessionID = parsedResult[Constants.TMDBResponseKeys.SessionID] as? String else {
+                displayError("Key '\(Constants.TMDBResponseKeys.SessionID)' not found in \(parsedResult)")
                 return
             }
             
@@ -317,11 +316,77 @@ class LoginViewController: UIViewController {
         /* TASK: Get the user's ID, then store it (appDelegate.userID) for future use and go to next view! */
         
         /* 1. Set the parameters */
+        let methodParameters = [
+            Constants.TMDBParameterKeys.ApiKey: Credentials.apiKey,
+            Constants.TMDBParameterKeys.SessionID: sessionID
+        ]
+        
         /* 2/3. Build the URL, Configure the request */
+        // Create URL to request account information
+        let request = URLRequest(url: appDelegate.tmdbURLFromParameters(methodParameters as [String:AnyObject], withPathExtension: "/account"))
+        
         /* 4. Make the request */
-        /* 5. Parse the data */
-        /* 6. Use the data! */
+        // Create task for request
+        let task = appDelegate.sharedSession.dataTask(with: request) { (data, response, error) in
+            
+            // Check for errors and print them. Also reset UI if error is found
+            func displayError(_ error: String, debugLabelText: String? = nil) {
+                print(error)
+                performUIUpdatesOnMain {
+                    self.setUIEnabled(true)
+                    self.debugTextLabel.text = "Login Failed (getUserID)"
+                }
+            }
+            
+            // Check if an error was return. If so print the error
+            guard (error == nil) else {
+                displayError("Error found in request: \(error!)")
+                return
+            }
+            
+            // Check if statusCode is a successful 2xx code if not print error
+            guard let statusCode = (response as? HTTPURLResponse)?.statusCode, statusCode >= 200 && statusCode <= 299 else {
+                displayError("Request returned a code other than 2xx")
+                return
+            }
+            
+            // Check that data was returned from request before parsing
+            guard let data = data else {
+                displayError("No data was returned")
+                return
+            }
+            
+            /* 5. Parse the data */
+            // Try to parse data, catch any error and print error
+            let parsedResult: [String:AnyObject]!
+            do {
+                parsedResult = try JSONSerialization.jsonObject(with: data, options: .allowFragments) as! [String:AnyObject]
+            } catch {
+                displayError("Could not parse JSON: \(data)")
+                return
+            }
+            
+            // Check if error in JSON returned from TMDB? If so print error
+            if let _ = parsedResult![Constants.TMDBResponseKeys.StatusCode] as? Int {
+                displayError("The Movie Database returned an error here: \(Constants.TMDBResponseKeys.StatusCode) and here: \(Constants.TMDBResponseKeys.StatusMessage) in \(parsedResult)")
+                
+            }
+            
+            // Check for "id" key in parsedResult. If key not present print error
+            guard let userID = parsedResult[Constants.TMDBResponseKeys.UserID] as? Int else {
+                displayError("Key '\(Constants.TMDBResponseKeys.UserID)' not found in \(parsedResult)")
+                return
+            }
+            
+            /* 6. Use the data! */
+            // Get data and save it in AppDelegate
+            self.appDelegate.userID = userID
+            self.completeLogin()
+            
+            
+        }
         /* 7. Start the request */
+        task.resume()
     }
 }
 
