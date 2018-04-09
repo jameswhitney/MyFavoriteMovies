@@ -118,7 +118,7 @@ class LoginViewController: UIViewController {
             
             // Check for succesfull response in the 2xx range otherwise print the error
             guard  let statusCode = (response as? HTTPURLResponse)?.statusCode, statusCode >= 200 && statusCode <= 299 else {
-                displayError("Request returned value outside of 2xx in getRequestToken")
+                displayError("Request returned value outside of 2xx.")
                 return
             }
             
@@ -194,9 +194,10 @@ class LoginViewController: UIViewController {
             }
             // Check for succesful response in the 2xx range
             guard let statusCode = (response as? HTTPURLResponse)?.statusCode, statusCode >= 200 && statusCode <= 299 else {
-                displayError("Request failed to return a status code other than 2xx in loginWithToken")
+                displayError("Response status code is not in the 2xx range.")
                 return
             }
+
             
             // Check if data was returned if not print error
             guard let data = data else {
