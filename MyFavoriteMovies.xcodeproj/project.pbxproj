@@ -7,7 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		199865BD20757D4200D8C0C3 /* MyConstants.swift in Sources */ = {isa = PBXBuildFile; fileRef = 199865BC20757D4200D8C0C3 /* MyConstants.swift */; };
+		199C290B207BBA0000D4D9E9 /* MyConstants.swift in Sources */ = {isa = PBXBuildFile; fileRef = 199C290A207BBA0000D4D9E9 /* MyConstants.swift */; };
 		A96C401A1BED0F5E00BA6803 /* Constants.swift in Sources */ = {isa = PBXBuildFile; fileRef = A96C40191BED0F5E00BA6803 /* Constants.swift */; };
 		A9A3A2321BEBE25C009BE8E1 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = A9A3A2311BEBE25C009BE8E1 /* AppDelegate.swift */; };
 		A9A3A2371BEBE25C009BE8E1 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = A9A3A2351BEBE25C009BE8E1 /* Main.storyboard */; };
@@ -24,7 +24,7 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
-		199865BC20757D4200D8C0C3 /* MyConstants.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MyConstants.swift; sourceTree = "<group>"; };
+		199C290A207BBA0000D4D9E9 /* MyConstants.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MyConstants.swift; sourceTree = "<group>"; };
 		A96C40191BED0F5E00BA6803 /* Constants.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Constants.swift; sourceTree = "<group>"; };
 		A9A3A22E1BEBE25C009BE8E1 /* MyFavoriteMovies.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = MyFavoriteMovies.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		A9A3A2311BEBE25C009BE8E1 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
@@ -82,7 +82,7 @@
 			isa = PBXGroup;
 			children = (
 				A9A3A2311BEBE25C009BE8E1 /* AppDelegate.swift */,
-				199865BC20757D4200D8C0C3 /* MyConstants.swift */,
+				199C290A207BBA0000D4D9E9 /* MyConstants.swift */,
 				A9A3A2531BEC11F7009BE8E1 /* Movie.swift */,
 				A96C40191BED0F5E00BA6803 /* Constants.swift */,
 				A9A3A2491BEC0208009BE8E1 /* GCDBlackBox.swift */,
@@ -205,7 +205,7 @@
 				A9A3A2511BEC11DE009BE8E1 /* MovieDetailViewController.swift in Sources */,
 				A9A3A2541BEC11F7009BE8E1 /* Config.swift in Sources */,
 				A9A3A24F1BEC11DE009BE8E1 /* FavoritesTableViewController.swift in Sources */,
-				199865BD20757D4200D8C0C3 /* MyConstants.swift in Sources */,
+				199C290B207BBA0000D4D9E9 /* MyConstants.swift in Sources */,
 				A9A3A24A1BEC0208009BE8E1 /* GCDBlackBox.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

@@ -41,7 +41,7 @@ class GenreTableViewController: UITableViewController {
         
         /* 1. Set the parameters */
         let methodParameters = [
-            Constants.TMDBParameterKeys.ApiKey: Constants.TMDBParameterValues.ApiKey,
+            Constants.TMDBParameterKeys.ApiKey: Credentials.apiKey,
         ]
         
         /* 2/3. Build the URL, Configure the request */

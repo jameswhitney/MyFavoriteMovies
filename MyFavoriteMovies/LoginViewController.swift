@@ -150,8 +150,7 @@ class LoginViewController: UIViewController {
             /* 6. Use the data! */
             self.appDelegate.requestToken = requestToken
             self.loginWithToken(self.appDelegate.requestToken!)
-            print(requestToken)
-            
+    
         }
 
         /* 7. Start the request */

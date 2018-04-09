@@ -47,7 +47,7 @@ class MovieDetailViewController: UIViewController {
             /* TASK A: Get favorite movies, then update the favorite buttons */
             /* 1A. Set the parameters */
             let methodParameters = [
-                Constants.TMDBParameterKeys.ApiKey: Constants.TMDBParameterValues.ApiKey,
+                Constants.TMDBParameterKeys.ApiKey: Credentials.apiKey,
                 Constants.TMDBParameterKeys.SessionID: appDelegate.sessionID!
             ]
             

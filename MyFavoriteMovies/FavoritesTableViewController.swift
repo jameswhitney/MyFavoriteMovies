@@ -37,7 +37,7 @@ class FavoritesTableViewController: UITableViewController {
         
         /* 1. Set the parameters */
         let methodParameters = [
-            Constants.TMDBParameterKeys.ApiKey: Constants.TMDBParameterValues.ApiKey,
+            Constants.TMDBParameterKeys.ApiKey: Credentials.apiKey,
             Constants.TMDBParameterKeys.SessionID: appDelegate.sessionID!
         ]
         
