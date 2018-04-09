@@ -103,7 +103,7 @@ class GenreTableViewController: UITableViewController {
     
     // MARK: Logout
     
-    func logout() {
+    @objc func logout() {
         dismiss(animated: true, completion: nil)
     }
 }
@@ -117,7 +117,7 @@ extension GenreTableViewController {
         // get cell type
         let cellReuseIdentifier = "MovieTableViewCell"
         let movie = movies[(indexPath as NSIndexPath).row]
-        let cell = tableView.dequeueReusableCell(withIdentifier: cellReuseIdentifier) as UITableViewCell!
+        let cell = tableView.dequeueReusableCell(withIdentifier: cellReuseIdentifier) as UITableViewCell?
         
         // set cell defaults
         cell?.textLabel!.text = movie.title

@@ -100,7 +100,7 @@ class FavoritesTableViewController: UITableViewController {
     
     // MARK: Logout
     
-    func logout() {
+    @objc func logout() {
         dismiss(animated: true, completion: nil)
     }
 }
@@ -114,7 +114,7 @@ extension FavoritesTableViewController {
         // get cell type
         let cellReuseIdentifier = "FavoriteTableViewCell"
         let movie = movies[(indexPath as NSIndexPath).row]
-        let cell = tableView.dequeueReusableCell(withIdentifier: cellReuseIdentifier) as UITableViewCell!
+        let cell = tableView.dequeueReusableCell(withIdentifier: cellReuseIdentifier) as UITableViewCell?
         
         // set cell defaults
         cell?.textLabel!.text = movie.title
