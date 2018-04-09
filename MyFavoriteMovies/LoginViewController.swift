@@ -118,13 +118,13 @@ class LoginViewController: UIViewController {
             
             // Check for succesfull response in the 2xx range otherwise print the error
             guard  let statusCode = (response as? HTTPURLResponse)?.statusCode, statusCode >= 200 && statusCode <= 299 else {
-                displayError("Request returned value outside of 2xx")
+                displayError("Request returned value outside of 2xx in getRequestToken")
                 return
             }
             
             // Check if any data was return. If not print error
             guard let data = data else {
-                displayError("No data was returned")
+                displayError("No data was returned in getRequestToken")
                 return
             }
             
@@ -173,10 +173,66 @@ class LoginViewController: UIViewController {
             
         ]
         /* 2/3. Build the URL, Configure the request */
+        let request = URLRequest(url: appDelegate.tmdbURLFromParameters(methodParameters as [String:AnyObject], withPathExtension: "/authentication/token/validate_with_login"))
+        
         /* 4. Make the request */
-        /* 5. Parse the data */
-        /* 6. Use the data! */
-        /* 7. Start the request */
+        let task = appDelegate.sharedSession.dataTask(with: request) { (data, response, error) in
+            
+            // if an error occurs, print it and re-enable the UI
+            func displayError(_ error: String, debugLabelText: String? = nil) {
+                print(error)
+                performUIUpdatesOnMain {
+                    self.setUIEnabled(true)
+                    self.debugTextLabel.text = "Login Failed (Login Step)."
+                }
+            }
+            
+            /* GUARD: Was there an error? */
+            guard (error == nil) else {
+                displayError("There was an error with your request: \(error!)")
+                return
+            }
+            // Check for succesful response in the 2xx range
+            guard let statusCode = (response as? HTTPURLResponse)?.statusCode, statusCode >= 200 && statusCode <= 299 else {
+                displayError("Request failed to return a status code other than 2xx in loginWithToken")
+                return
+            }
+            
+            // Check if data was returned if not print error
+            guard let data = data else {
+                displayError("No data return from request in loginWithToken")
+                return
+            }
+            
+            // Try to parse data, catch any error and print error
+            let parsedResult: [String:AnyObject]!
+            
+            do {
+                parsedResult = try JSONSerialization.jsonObject(with: data, options: .allowFragments) as! [String:AnyObject]
+            } catch {
+                displayError("Could not parse data as JSON: '\(data)'")
+                return
+            }
+            
+            // Check if TMDB returned an error. Print error if one is found
+            if let _ = parsedResult[Constants.TMDBResponseKeys.StatusCode] as? Int {
+                displayError("TheMovieDB returned an error. See the '\(Constants.TMDBResponseKeys.StatusCode)' and '\(Constants.TMDBResponseKeys.StatusMessage)' in \(parsedResult)")
+                return
+            }
+            
+            // Is the "success" key in parsedResult? If not print error
+            guard let success = parsedResult[Constants.TMDBResponseKeys.Success] as? Bool, success == true else {
+                displayError("Key '\(Constants.TMDBResponseKeys.Success)' not found in \(parsedResult)")
+                return
+            }
+            
+            // Add data to AppDelegate and use it
+            print("Token: \(requestToken)")
+            self.getSessionID(self.appDelegate.requestToken!)
+        }
+        
+        // Start request
+        task.resume()
     }
     
     private func getSessionID(_ requestToken: String) {
