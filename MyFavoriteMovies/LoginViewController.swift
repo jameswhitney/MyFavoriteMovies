@@ -57,6 +57,9 @@ class LoginViewController: UIViewController {
         } else {
             setUIEnabled(false)
             
+            // Save username and password in Constants struct
+            Constants.TMDBParameterValues.Username = usernameTextField.text!
+            Constants.TMDBParameterValues.Password = passwordTextField.text!
             /*
                 Steps for Authentication...
                 https://www.themoviedb.org/documentation/api/sessions
@@ -162,6 +165,13 @@ class LoginViewController: UIViewController {
         /* TASK: Login, then get a session id */
         
         /* 1. Set the parameters */
+        let methodParameters = [
+            Constants.TMDBParameterKeys.ApiKey: Credentials.apiKey,
+            Constants.TMDBParameterKeys.RequestToken: requestToken,
+            Constants.TMDBParameterKeys.Username: Constants.TMDBParameterValues.Username,
+            Constants.TMDBParameterKeys.Password: Constants.TMDBParameterValues.Password
+            
+        ]
         /* 2/3. Build the URL, Configure the request */
         /* 4. Make the request */
         /* 5. Parse the data */
